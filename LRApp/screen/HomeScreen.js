@@ -1,24 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Pressable, StyleSheet, Text, TextInput } from 'react-native';
 import * as Location from 'expo-location';
-import MapView from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 
 const HomeScreen = ({ navigation }) => {
-  const [startLocation, setStartLocation] = useState('');
-  const [endLocation, setEndLocation] = useState('');
+  const [startLocation, setStartLocation] = useState(null);
+  const [endLocation, setEndLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [mapRegion, setMapRegion] = useState({
+    latitude: 7.9403,
+    longitude: 81.0188,
+    latitudeDelta: 0.0522,
+    longitudeDelta: 0.0421
+  });
+
+  // useEffect(() => {
+  //   // (async () => {
+      
+  //   //   let { status } = await Location.requestForegroundPermissionsAsync();
+  //   //   if (status !== 'granted') {
+  //   //     setErrorMsg('Permission to access location was denied');
+  //   //     return;
+  //   //   }
+
+  //   //   let location = await Location.getCurrentPositionAsync({});
+  //   //   setLocation(location);
+  //   // })();
+  // }, []);
 
   const startTrip = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
 
-    if (status !== 'granted') {
-      alert('Location services are required to start the trip.');
-      return;
-    }
-    alert('Start Trip');
+  (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
 
-    //  Location.watchPositionAsync({ accuracy: Location.Accuracy.High, timeInterval: 1000, distanceInterval: 1 }, (location) => {
-    //    console.log('Location:', location);
-    //  });
+      let location = await Location.getCurrentPositionAsync({});
+      setStartLocation(location);
+    })();
+    console.log(startLocation);
   };
 
   const changeStartLocation = (inputText) => {
@@ -55,7 +78,21 @@ const HomeScreen = ({ navigation }) => {
         />
 
 
-        <MapView style={styles.subMapView}>
+        <MapView style={styles.subMapView}
+        provider={PROVIDER_GOOGLE}
+        showsUserLocation={true}
+        region={mapRegion}
+
+        onPress={(event) => {
+          const { coordinate } = event.nativeEvent;
+          console.log('Tapped location:', coordinate);
+          // Do something with the tapped location, e.g., setEndLocation
+          setEndLocation({
+            coordinate
+          });
+        }}
+        
+        >
 
         </MapView>
 
@@ -154,6 +191,7 @@ const styles = StyleSheet.create({
       height:'80%',
       marginTop:'10%',
       marginLeft:'2.5%',
+      
     },
   });
   
