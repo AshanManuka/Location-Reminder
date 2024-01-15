@@ -54,7 +54,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.mainText}>Hello Ashan,</Text>
+      {/* <Text style={styles.mainText}>Hello Ashan,</Text> */}
 
       <View style={styles.startBtnSec}>
         <Pressable style={styles.startBtn} onPress={startTrip}>
@@ -63,22 +63,12 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.subView}>
-        <TextInput
-          style={styles.inputItemsOne}
-          onChangeText={changeStartLocation}
-          placeholder="Start Location"
-          value={startLocation}
-        />
+        
+        <Text style={styles.inputItemsOne}>Start Location</Text>
+        <Text style={styles.inputItemsTwo}>End Location</Text>
 
-        <TextInput
-          style={styles.inputItemsTwo}
-          onChangeText={changeEndLocation}
-          placeholder="Final Location"
-          value={endLocation}
-        />
-
-
-        <MapView style={styles.subMapView}
+        <View style={styles.subMapViewOne}>
+        <MapView style={styles.subMapViewTwo}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         region={mapRegion}
@@ -95,17 +85,16 @@ const HomeScreen = ({ navigation }) => {
         >
 
         </MapView>
-
-
+        </View>
 
       </View>
 
       <View style={styles.btnSec}>
         <Pressable
-          style={styles.button}
+          style={styles.nextBtn}
           onPress={() => navigation.navigate('Game')}
         >
-          <Text style={styles.btnText}>Logs</Text>
+          <Text style={styles.btnText}>ADD Tasks</Text>
         </Pressable>
       </View>
     </View>
@@ -152,7 +141,7 @@ const styles = StyleSheet.create({
       },
     subView:{
         backgroundColor:'#0a3d62',
-        marginTop:'10%',
+        marginTop:'7%',
         width:'95%',
         height:'60%',
         borderRadius:10
@@ -184,13 +173,32 @@ const styles = StyleSheet.create({
         fontSize:18,
     },
     btnSec:{
-        marginTop:'20%'
+      marginTop:'5%',
+      backgroundColor: '#16a085',
+      width:'80%',
+      height:'8%',
+      margin: '2%',
+      borderRadius:6
     },
-    subMapView:{
+    nextBtn:{
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 8,
+      height:'100%',
+      backgroundColor: '#16a085',
+    },
+    subMapViewOne:{
       width:'95%',
       height:'80%',
       marginTop:'10%',
       marginLeft:'2.5%',
+      borderRadius:10
+      
+    },
+    subMapViewTwo:{
+      width:'100%',
+      height:'100%',
+      
       
     },
   });
