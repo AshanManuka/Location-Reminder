@@ -20,11 +20,14 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "package" :"com.ashanmanuka.LRApp",
-        "googleMapsApiKey" : "AIzaSyBz9TaPw92znCNWtpHHWX_4ojDaeZ4Cw_E"
+        "backgroundColor": "#ffffff"
       },
-      "package": "com.ashanmanuka.LRApp"
+      "package": "com.ashanmanuka.LRApp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBz9TaPw92znCNWtpHHWX_4ojDaeZ4Cw_E"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

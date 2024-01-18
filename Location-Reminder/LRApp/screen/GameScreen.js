@@ -39,7 +39,7 @@ const GameScreen = ({navigation}) => {
 
         //setSearchResults(locationList);
 
-        fetch('http://192.168.171.175:8000/open', { method: 'GET' })
+        fetch('http://3.84.10.254/open', { method: 'GET' })
         .then((responseJson) => {
           console.log(responseJson);
         })
@@ -59,7 +59,7 @@ const GameScreen = ({navigation}) => {
     }
 
     const methodOne = () => {
-      const baseUrl = 'http://192.168.56.1:8000/open';
+      const baseUrl = 'http://192.168.51.206:8000/open';
 
       fetch(baseUrl,{method: 'GET'})
         .then((responseJson) => {
@@ -99,8 +99,8 @@ const GameScreen = ({navigation}) => {
 
     const methodFour = () => {
 
-      const baseUrl = 'http://127.0.0.1:8000/open';
-
+      const baseUrl = 'http://3.84.10.254/open';
+  
       fetch(baseUrl,{method: 'GET'})
         .then((responseJson) => {
           console.log(responseJson);
