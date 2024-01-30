@@ -25,7 +25,6 @@ const GameScreen = ({navigation}) => {
       searchLocationByName(typedLocation, (results) => {
           if (results.length > 0) {
             console.log('Search results:', results);
-            setSearchResults(results);
             setPlaceList(results);
           } else {
             alert('No Places found..!');
@@ -36,6 +35,7 @@ const GameScreen = ({navigation}) => {
     }
 
     const addKeyword = async () => {
+      addLocation(typedLocation);
       
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -66,65 +66,41 @@ const GameScreen = ({navigation}) => {
         console.error('Error getting location:', error);
       }
       
-      addLocation(typedLocation);
       alert("Saved Place Category..!");
       setIsButtonDisabled(true);
     }
     
 
-    const selectedLocation = async (name, id) => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        
-        if (status !== 'granted') {
-          console.log('Permission to access location was denied');
-          return;
-        }
-  
-        let location = await Location.getCurrentPositionAsync({});
-        console.log(location.coords.latitude);
-        
-        const postData = {
-          placename: name,
-          category: 'YourCategory', // Replace with the actual category
-          latitude: location.coords.latitude, // float 6
-          longitude: location.coords.longitude, // float 6
-        };
-  
-        const baseUrl = 'http://3.84.10.254/predict_place';
-  
-        fetch(baseUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(postData),
-        })
-          .then((response) => response.json())
-          .then((responseJson) => {
-            console.log(responseJson);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } catch (error) {
-        console.error('Error getting location:', error);
-      }
-    };
-
-
-
-
-    const selectAndFindLocation = (locationName,selectedId) => {
-        const selectedArray = selectedPlace.concat({ id: selectedId, name: locationName });
-        setSelectedPlace(selectedArray);
-        console.log(selectedPlace);
-        changeLocations('');
+  const selectedLocation = async (name, categoryId) => {
+    const selectedLocation = {
+      id : categoryId,
+      categoryName : name
     }
+
+    const newSelectedList = selectedPlace;
+    newSelectedList.push(selectedLocation); 
+    setSelectedPlace(newSelectedList);
+    console.log(selectedPlace);
+  };
+
+
+
+
+  const selectAndFindLocation = (locationName,selectedId) => {
+      const selectedArray = selectedPlace.concat({ id: selectedId, name: locationName });
+      setSelectedPlace(selectedArray);
+      console.log(selectedPlace);
+      changeLocations('');
+  }
 
     const removeFromList = (locationId) => {
         alert("delete from list"+locationId);
     }
+
+  const startTrip = () => {
+    
+    navigation.navigate('Home')
+  }
 
 
     return(
@@ -166,18 +142,17 @@ const GameScreen = ({navigation}) => {
                 ))}
             </ScrollView>
 
-            {placeList.length > 0 && (
+           
             <ScrollView style={styles.selectedItemsContainer}>
                 <View horizontal={true}
-                style={styles.resultItem}>
-                    
-              </View>
+                style={styles.resultItem}>   
+                </View>
             {selectedPlace.map((result) => (
             <View horizontal={true}
               key={result.id}
               style={styles.resultItem}
             >
-              <Text style={styles.resultTextTwo}>{result.name}</Text>
+              <Text style={styles.resultTextTwo}>{result.categoryName}</Text>
                     <TouchableOpacity
                     key={result.id}
                     style={styles.subBtn}
@@ -189,26 +164,17 @@ const GameScreen = ({navigation}) => {
             </View>
           ))}      
           </ScrollView>
-        )}
+     
 
     
         <View style={styles.btnSec}>
-        <Pressable style={styles.button}
-        onPress={() => navigation.navigate('Home')}>
-        <Text style={styles.btnText}>Logs</Text>  
+        <Pressable style={styles.goBtn}
+        onPress={startTrip}>
+        <Text style={styles.btnTextTwo}>Let's Go</Text>  
         </Pressable>
         </View>
 
-         {/* // fun */}
-        {/*<TouchableOpacity
-            style={styles.sampleBtn}
-            onPress={methodOne}
-            >
-            <Text style={styles.btnText}>Search</Text>
-            </TouchableOpacity>*/}
-
-    
-    
+            
     
     
     
@@ -255,13 +221,13 @@ const styles = StyleSheet.create({
         width:'26%'
       },
       addBtn:{
-        backgroundColor:'#fab1a0',
+        backgroundColor:'#D980FA',
         marginTop:'3%',
-        paddingLeft:'10%',
-        paddingRight:'10%',
-        marginLeft:'67%',
+        paddingLeft:'15%',
+        paddingRight:'15%',
+        marginLeft:'15%',
         borderRadius:8,
-        width:'30%',
+        width:'40%',
         paddingBottom:'1%',
         paddingTop:'1%'
       },
@@ -287,9 +253,9 @@ const styles = StyleSheet.create({
       },
       selectedItemsContainer: {
         marginTop: '25%',
-        maxHeight: 220,
+        maxHeight: '90%',
         width:'70%',
-        marginLeft:'10%'
+        marginLeft:'15%'
       },
       resultItem:{
         backgroundColor:'#2d3436',
@@ -302,7 +268,9 @@ const styles = StyleSheet.create({
         color:'#fff',
         fontWeight:'bold',
         padding:5,
-        width:'50%'
+        width:'50%',
+        fontSize:20,
+        marginLeft:'5%'
       },
       subBtn:{
         backgroundColor:'#c0392b',
@@ -317,8 +285,32 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         padding:5,
       },
-    btnSec:{
-        marginTop:'20%'
+      btnSec:{
+        marginTop:'5%',
+        backgroundColor: '#16a085',
+        width:'80%',
+        height:'8%',
+        margin: '2%',
+        borderRadius:6,
+        position:'fixed',
+        marginLeft:'10%'
+
+    },
+    goBtn:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    height:'100%',
+    backgroundColor: '#16a085',
+    },
+    btnTextTwo:{
+      color: '#dcdde1',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 30,
+        fontWeight: 'bold'
     }
+
+      
   });
   
