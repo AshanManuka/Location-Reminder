@@ -33,14 +33,16 @@ export const getAllLocation = (callback) => {
 
 
 export const searchLocationByName = (searchName, callback) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        'SELECT * FROM location WHERE name LIKE ?;',
-        [`%${searchName}%`],
-        (_, { rows }) => {
-          const result = rows._array;
-          callback(result);
-        }
-      );
-    });
-  };
+  console.log(searchName);
+  db.transaction((tx) => {
+    tx.executeSql(
+      'SELECT * FROM location WHERE category LIKE ?;',
+      [`%${searchName}%`],
+      (_, { rows }) => {
+        const result = rows._array;
+        console.log("Results",result);
+        callback(result);
+      }
+    );
+  });
+};

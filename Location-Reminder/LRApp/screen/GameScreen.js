@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
-import {addLocation, getAllLocation} from './../database';
+import {addLocation, getAllLocation, searchLocationByName} from './../database';
 import { View, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 
 
@@ -10,12 +10,10 @@ const GameScreen = ({navigation}) => {
     const [searchResults, setSearchResults] = React.useState([]);
     const [selectedPlace, setSelectedPlace] = React.useState([]);
     const [placeList, setPlaceList] = React.useState([]);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     useEffect(() => {
 
-
-
-  
     }, []);
 
     const changeLocations = (inputText) => {
@@ -23,45 +21,56 @@ const GameScreen = ({navigation}) => {
     }
 
     const searchKeyword = () => {
-        // alert("Search..!")
-        const locationList = [
-            {
-                id:1,
-                name:"cafe"
-            },
-            {
-                id:2,
-                name:"pharmacy"
-            },
-            {
-                id:3,
-                name:"meet Shop"
-            },
-            {
-                id:4,
-                name:"beer Shop"
-            },
-            {
-                id:5,
-                name:"grocery Shop"
-            }
-        ]
-
-        setPlaceList(locationList);
         
-
-        getAllLocation((results) => {
+      searchLocationByName(typedLocation, (results) => {
           if (results.length > 0) {
             console.log('Search results:', results);
             setSearchResults(results);
+            setPlaceList(results);
           } else {
-            alert('No business found.');
+            alert('No Places found..!');
+            setIsButtonDisabled(false);
           }
-        });
-
-
-        
+      });
+       
     }
+
+    const addKeyword = async () => {
+      
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+    
+        if (status !== 'granted') {
+          console.log('Permission to access location was denied');
+          return;
+        }
+    
+        let location = await Location.getCurrentPositionAsync({});
+        let lati = parseFloat(location.coords.latitude).toFixed(6);
+        let longi = parseFloat(location.coords.longitude).toFixed(6);
+        const name = typedLocation;
+    
+        const baseUrl = 'http://3.84.10.254/hopePlaces';
+        const queryString = `?keyword=${encodeURIComponent(name)}&latitude=${encodeURIComponent(lati)}&longitude=${encodeURIComponent(longi)}`;
+        const url = baseUrl + queryString;
+    
+        fetch(url)
+          .then((response) => response.json())
+          .then((responseJson) => {
+            console.log(responseJson);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+      
+      addLocation(typedLocation);
+      alert("Saved Place Category..!");
+      setIsButtonDisabled(true);
+    }
+    
 
     const selectedLocation = async (name, id) => {
       try {
@@ -134,17 +143,25 @@ const GameScreen = ({navigation}) => {
             style={styles.searchBtn}
             onPress={searchKeyword}
             >
-            <Text style={styles.btnText}>Search</Text>
+              <Text style={styles.btnText}>Search</Text>
             </TouchableOpacity>
+
+              <TouchableOpacity
+              style={styles.addBtn}
+              onPress={addKeyword}
+              disabled={isButtonDisabled}
+              >
+                <Text style={styles.btnText}>Add</Text>
+              </TouchableOpacity>
 
             <ScrollView horizontal={true} style={styles.resultView}>
                 {placeList.map((result) => (
                     <TouchableOpacity
                     key={result.id}
                     style={styles.searchResultItem}
-                    onPress={() => {selectedLocation(result.name,result.id)}}
+                    onPress={() => {selectedLocation(result.category,result.id)}}
                     >
-                    <Text style={styles.btnText}>{result.name}</Text>
+                    <Text style={styles.btnText}>{result.category}</Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
@@ -229,10 +246,24 @@ const styles = StyleSheet.create({
     searchBtn:{
         backgroundColor:'#fab1a0',
         marginTop:'-8%',
-        padding:'2%',
+        paddingTop:'1%',
+        paddingBottom:'1%',
+        paddingLeft:'5%',
+        paddingRight:'5%',
         marginLeft:'70%',
+        borderRadius:10,
+        width:'26%'
+      },
+      addBtn:{
+        backgroundColor:'#fab1a0',
+        marginTop:'3%',
+        paddingLeft:'10%',
+        paddingRight:'10%',
+        marginLeft:'67%',
         borderRadius:8,
-        width:'21%'
+        width:'30%',
+        paddingBottom:'1%',
+        paddingTop:'1%'
       },
       btnText:{
         color: 'black',
@@ -243,7 +274,7 @@ const styles = StyleSheet.create({
       },
       resultView:{
             position:'absolute',
-            marginTop: '50%',
+            marginTop: '56%',
             flexDirection: 'row',
             width:'100%',
       },

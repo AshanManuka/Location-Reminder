@@ -119,16 +119,7 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* <Text style={styles.mainText}>Hello Ashan,</Text> */}
 
-      <View style={styles.startBtnSec}>
-        <Pressable style={styles.startBtn} onPress={startTrip}>
-          <Text style={styles.btnText}>Start a Trip</Text>
-        </Pressable>
-      </View>
-
       <View style={styles.subView}>
-        
-        <Text style={styles.inputItemsOne}>Start Location</Text>
-        <Text style={styles.inputItemsTwo}>End Location</Text>
 
         <View style={styles.subMapViewOne}>
         <MapView style={styles.subMapViewTwo}
@@ -180,21 +171,6 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         marginTop:'12%'
     },
-    startBtnSec:{
-      marginTop:'10%',
-      backgroundColor: '#16a085',
-      width:'85%',
-      height:'10%',
-      margin: '2%',
-      borderRadius:6
-    },
-    startBtn:{
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 8,
-      height:'100%',
-      backgroundColor: '#16a085',
-    },
     btnText:{
         color: '#dcdde1',
         alignItems: 'center',
@@ -204,36 +180,10 @@ const styles = StyleSheet.create({
       },
     subView:{
         backgroundColor:'#0a3d62',
-        marginTop:'7%',
-        width:'95%',
-        height:'60%',
-        borderRadius:10
-    },
-    inputItemsOne:{
-        height: 40,
-        width:'40%',
-        borderWidth: 1,
         marginTop:'2%',
-        marginLeft:'5%',
-        borderTopColor:'#0a3d62',
-        borderLeftColor:'#0a3d62',
-        borderRightColor:'#0a3d62',
-        borderBottomColor:'#fff',
-        color:'#fff',
-        fontSize:18,
-    },
-    inputItemsTwo:{
-        height: 40,
-        width:'40%',
-        borderWidth: 1,
-        marginTop:'-10%',
-        marginLeft:'55%',
-        borderTopColor:'#0a3d62',
-        borderLeftColor:'#0a3d62',
-        borderRightColor:'#0a3d62',
-        borderBottomColor:'#fff',
-        color:'#fff',
-        fontSize:18,
+        width:'95%',
+        height:'70%',
+        borderRadius:10
     },
     btnSec:{
       marginTop:'5%',
@@ -252,10 +202,10 @@ const styles = StyleSheet.create({
     },
     subMapViewOne:{
       width:'95%',
-      height:'80%',
+      height:'90%',
       marginTop:'10%',
       marginLeft:'2.5%',
-      borderRadius:10
+      borderRadius:20
       
     },
     subMapViewTwo:{
