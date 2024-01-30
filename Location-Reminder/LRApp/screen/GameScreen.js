@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import * as Location from 'expo-location';
+import {addLocation, getAllLocation} from './../database';
 import { View, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 
 
@@ -7,6 +9,14 @@ const GameScreen = ({navigation}) => {
     const [typedLocation, setTypedLocation] = React.useState('');
     const [searchResults, setSearchResults] = React.useState([]);
     const [selectedPlace, setSelectedPlace] = React.useState([]);
+    const [placeList, setPlaceList] = React.useState([]);
+
+    useEffect(() => {
+
+
+
+  
+    }, []);
 
     const changeLocations = (inputText) => {
         setTypedLocation(inputText);
@@ -17,98 +27,84 @@ const GameScreen = ({navigation}) => {
         const locationList = [
             {
                 id:1,
-                name:"Cafe"
+                name:"cafe"
             },
             {
                 id:2,
-                name:"Pharmacy"
+                name:"pharmacy"
             },
             {
                 id:3,
-                name:"Meet-Shop"
+                name:"meet Shop"
             },
             {
                 id:4,
-                name:"Beer-Shop"
+                name:"beer Shop"
             },
             {
                 id:5,
-                name:"Grocery-Shop"
+                name:"grocery Shop"
             }
         ]
 
-        //setSearchResults(locationList);
+        setPlaceList(locationList);
+        
 
-        fetch('http://3.84.10.254/open', { method: 'GET' })
-        .then((responseJson) => {
-          console.log(responseJson);
-        })
-        .catch((error) => {
-          console.error(error);
+        getAllLocation((results) => {
+          if (results.length > 0) {
+            console.log('Search results:', results);
+            setSearchResults(results);
+          } else {
+            alert('No business found.');
+          }
         });
-        
-        
-        // fetch(baseUrlAA,{method: 'GET'})
-        // .then((responseJson) => {
-        //   console.log(responseJson);
-        // })
-        // .catch((error) => {
-        //   console.error(error)
-        // });
+
+
         
     }
 
-    const methodOne = () => {
-      const baseUrl = 'http://192.168.51.206:8000/open';
-
-      fetch(baseUrl,{method: 'GET'})
-        .then((responseJson) => {
-          console.log(responseJson);
-        })
-        .catch((error) => {
-          console.error(error)
-        });
-
-    }
-
-    const methodTwo = () => {
-      const baseUrl = 'http://192.168.171.220:8000/open';
-
-      fetch(baseUrl,{method: 'GET'})
-        .then((responseJson) => {
-          console.log(responseJson);
-        })
-        .catch((error) => {
-          console.error(error)
-        });
-      
-    }
-
-    const methodThree = () => {
-
-      const baseUrl = 'http://192.168.248.129:8000/open';
-
-      fetch(baseUrl,{method: 'GET'})
-        .then((responseJson) => {
-          console.log(responseJson);
-        })
-        .catch((error) => {
-          console.error(error)
-        });
-    }
-
-    const methodFour = () => {
-
-      const baseUrl = 'http://3.84.10.254/open';
+    const selectedLocation = async (name, id) => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        
+        if (status !== 'granted') {
+          console.log('Permission to access location was denied');
+          return;
+        }
   
-      fetch(baseUrl,{method: 'GET'})
-        .then((responseJson) => {
-          console.log(responseJson);
+        let location = await Location.getCurrentPositionAsync({});
+        console.log(location.coords.latitude);
+        
+        const postData = {
+          placename: name,
+          category: 'YourCategory', // Replace with the actual category
+          latitude: location.coords.latitude, // float 6
+          longitude: location.coords.longitude, // float 6
+        };
+  
+        const baseUrl = 'http://3.84.10.254/predict_place';
+  
+        fetch(baseUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postData),
         })
-        .catch((error) => {
-          console.error(error)
-        });
-    }
+          .then((response) => response.json())
+          .then((responseJson) => {
+            console.log(responseJson);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+    };
+
+
+
 
     const selectAndFindLocation = (locationName,selectedId) => {
         const selectedArray = selectedPlace.concat({ id: selectedId, name: locationName });
@@ -142,18 +138,18 @@ const GameScreen = ({navigation}) => {
             </TouchableOpacity>
 
             <ScrollView horizontal={true} style={styles.resultView}>
-                {searchResults.map((result) => (
+                {placeList.map((result) => (
                     <TouchableOpacity
                     key={result.id}
                     style={styles.searchResultItem}
-                    onPress={() => {selectAndFindLocation(result.name,result.id)}}
+                    onPress={() => {selectedLocation(result.name,result.id)}}
                     >
                     <Text style={styles.btnText}>{result.name}</Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
 
-            {selectedPlace.length > 0 && (
+            {placeList.length > 0 && (
             <ScrollView style={styles.selectedItemsContainer}>
                 <View horizontal={true}
                 style={styles.resultItem}>
@@ -187,36 +183,13 @@ const GameScreen = ({navigation}) => {
         </View>
 
          {/* // fun */}
-         <TouchableOpacity
+        {/*<TouchableOpacity
             style={styles.sampleBtn}
             onPress={methodOne}
             >
             <Text style={styles.btnText}>Search</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>*/}
 
-             {/* // fun */}
-             <TouchableOpacity
-            style={styles.sampleBtn}
-            onPress={methodTwo}
-            >
-            <Text style={styles.btnText}>Search</Text>
-            </TouchableOpacity>
-
-             {/* // fun */}
-             <TouchableOpacity
-            style={styles.sampleBtn}
-            onPress={methodThree}
-            >
-            <Text style={styles.btnText}>Search</Text>
-            </TouchableOpacity>
-
-             {/* // fun */}
-             <TouchableOpacity
-            style={styles.sampleBtn}
-            onPress={methodFour}
-            >
-            <Text style={styles.btnText}>Search</Text>
-            </TouchableOpacity>
     
     
     

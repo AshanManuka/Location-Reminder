@@ -42,7 +42,28 @@ const HomeScreen = ({ navigation }) => {
       setStartLocation(location);
     })();
     console.log(startLocation);
+ 
+
+
+    // Watch the user's position
+  // const locationSubscription = await Location.watchPositionAsync(
+  //   { accuracy: Location.Accuracy.High, timeInterval: 1000, distanceInterval: 1 },
+  //   (location) => {
+  //     console.log('Location:', location);
+      
+  //     // Update the map region to the new location
+  //     setMapRegion({
+  //       ...mapRegion,
+  //       latitude: location.coords.latitude,
+  //       longitude: location.coords.longitude,
+  //     });
+      
+  //     // You can also update other UI components based on the new location
+  //   }
+  // );
   };
+
+  
 
   const changeStartLocation = (inputText) => {
     setStartLocation(inputText);
@@ -51,6 +72,48 @@ const HomeScreen = ({ navigation }) => {
   const changeEndLocation = (inputText) => {
     setEndLocation(inputText);
   };
+
+  const sendCurrentLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      let lati = parseFloat(location.coords.latitude).toFixed(6);
+      let longi = parseFloat(location.coords.longitude).toFixed(6);
+
+      
+      const postData = {
+        placename: "saloon",
+        category: 'YourCategory',
+        latitude:  lati, 
+        longitude: longi,
+      };
+
+      const baseUrl = 'http://3.84.10.254/predict_place';
+
+      fetch(baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          console.log(responseJson);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  }
 
   return (
     <View style={styles.container}>
