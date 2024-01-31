@@ -99,7 +99,11 @@ const GameScreen = ({navigation}) => {
 
   const startTrip = () => {
     
-    navigation.navigate('Home')
+    //navigation.navigate('Home')
+
+    navigation.navigate('Home', {
+      dataArray: selectedPlace
+    });
   }
 
 

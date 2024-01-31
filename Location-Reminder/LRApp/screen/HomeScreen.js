@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, StyleSheet, Text, TextInput } from 'react-native';
+import { View, Pressable, StyleSheet, Text } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 
-const HomeScreen = ({ navigation }) => {
-  const [startLocation, setStartLocation] = useState(null);
-  const [endLocation, setEndLocation] = useState(null);
+//const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
+  const { dataArray } = route.params || {};
   const [errorMsg, setErrorMsg] = useState(null);
+  const [intervalId, setIntervalId] = useState(null);
   const [mapRegion, setMapRegion] = useState({
     latitude: 7.9403,
     longitude: 81.0188,
@@ -14,23 +15,11 @@ const HomeScreen = ({ navigation }) => {
     longitudeDelta: 0.0421
   });
 
-  // useEffect(() => {
-  //   // (async () => {
-      
-  //   //   let { status } = await Location.requestForegroundPermissionsAsync();
-  //   //   if (status !== 'granted') {
-  //   //     setErrorMsg('Permission to access location was denied');
-  //   //     return;
-  //   //   }
+  useEffect(() => {
 
-  //   //   let location = await Location.getCurrentPositionAsync({});
-  //   //   setLocation(location);
-  //   // })();
-  // }, []);
-
-  const startTrip = async () => {
-
-  (async () => {
+    console.log(dataArray);
+    stopLocationUpdates();
+    (async () => {
       
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -39,39 +28,32 @@ const HomeScreen = ({ navigation }) => {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setStartLocation(location);
+      //setLocation(location);
     })();
-    console.log(startLocation);
- 
 
+    //startTrip();
+  }, [dataArray]);
 
-    // Watch the user's position
-  // const locationSubscription = await Location.watchPositionAsync(
-  //   { accuracy: Location.Accuracy.High, timeInterval: 1000, distanceInterval: 1 },
-  //   (location) => {
-  //     console.log('Location:', location);
-      
-  //     // Update the map region to the new location
-  //     setMapRegion({
-  //       ...mapRegion,
-  //       latitude: location.coords.latitude,
-  //       longitude: location.coords.longitude,
-  //     });
-      
-  //     // You can also update other UI components based on the new location
-  //   }
-  // );
-  };
+  const startTrip = async () => {
 
   
-
-  const changeStartLocation = (inputText) => {
-    setStartLocation(inputText);
+    // Watch the user's position
+  const locationSubscription = await Location.watchPositionAsync(
+    { accuracy: Location.Accuracy.High, timeInterval: 1000, distanceInterval: 1 },
+    (location) => {
+      console.log('Location:', location);
+      
+      // Update the map region to the new location
+      setMapRegion({
+        ...mapRegion,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      
+    }
+  );
   };
 
-  const changeEndLocation = (inputText) => {
-    setEndLocation(inputText);
-  };
 
   const sendCurrentLocation = async () => {
     try {
@@ -115,9 +97,34 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  const startLocationUpdates = () => {
+    sendCurrentLocation();
+
+    const id = setInterval(() => {
+      sendCurrentLocation();
+    }, 5000);
+
+    setIntervalId(id);
+  };
+
+  const stopLocationUpdates = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.mainText}>Hello Ashan,</Text> */}
+
+      <View style={styles.btnSecOne}>
+        <Pressable
+          style={styles.nextBtn}
+          onPress={startLocationUpdates}
+        >
+          <Text style={styles.btnText}>Start</Text>
+        </Pressable>
+      </View>
 
       <View style={styles.subView}>
 
@@ -131,11 +138,10 @@ const HomeScreen = ({ navigation }) => {
           const { coordinate } = event.nativeEvent;
           console.log('Tapped location:', coordinate);
           // Do something with the tapped location, e.g., setEndLocation
-          setEndLocation({
-            coordinate
-          });
+          // setEndLocation({
+          //   coordinate
+          // });
         }}
-        
         >
 
         </MapView>
@@ -182,11 +188,19 @@ const styles = StyleSheet.create({
         backgroundColor:'#0a3d62',
         marginTop:'2%',
         width:'95%',
-        height:'70%',
+        height:'60%',
         borderRadius:10
     },
     btnSec:{
       marginTop:'5%',
+      backgroundColor: '#16a085',
+      width:'80%',
+      height:'8%',
+      margin: '2%',
+      borderRadius:6
+    },
+    btnSecOne:{
+      marginTop:'10%',
       backgroundColor: '#16a085',
       width:'80%',
       height:'8%',
