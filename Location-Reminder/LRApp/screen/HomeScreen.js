@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, StyleSheet, Text } from 'react-native';
+import { View, Pressable, StyleSheet, Text, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 
@@ -8,9 +8,10 @@ const HomeScreen = ({ route, navigation }) => {
   const { dataArray } = route.params || {};
   const [errorMsg, setErrorMsg] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
+  const [responsePlace, setResponsePlace] = useState('');
   const [mapRegion, setMapRegion] = useState({
-    latitude: 7.9403,
-    longitude: 81.0188,
+    latitude: 6.9271,
+    longitude: 79.8612,
     latitudeDelta: 0.0522,
     longitudeDelta: 0.0421
   });
@@ -88,6 +89,12 @@ const HomeScreen = ({ route, navigation }) => {
         .then((response) => response.json())
         .then((responseJson) => {
           console.log(responseJson);
+          if(responsePlace != responseJson.placename){
+            showAlert(responseJson.placename, responseJson.category);
+            setResponsePlace(responseJson.placename);
+          }
+
+                  
         })
         .catch((error) => {
           console.error(error);
@@ -97,7 +104,28 @@ const HomeScreen = ({ route, navigation }) => {
     }
   }
 
+  const showAlert = (placename,category) => {
+    
+    dataArray.forEach(element => {
+      console.log("Element is ",element);
+      if(element.categoryName == category){
+        Alert.alert(
+          category,
+          placename,
+          [
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ],
+          { cancelable: false }
+        );
+      }
+      
+    });
+    
+   };
+
   const startLocationUpdates = () => {
+    if(dataArray != null){
+      
     sendCurrentLocation();
 
     const id = setInterval(() => {
@@ -105,6 +133,9 @@ const HomeScreen = ({ route, navigation }) => {
     }, 5000);
 
     setIntervalId(id);
+  }else{
+    alert("Please Pick a place before start the trip..!")
+  }
   };
 
   const stopLocationUpdates = () => {
@@ -123,6 +154,15 @@ const HomeScreen = ({ route, navigation }) => {
           onPress={startLocationUpdates}
         >
           <Text style={styles.btnText}>Start</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.btnSecTwo}>
+        <Pressable
+          style={styles.nextBtnTwo}
+          onPress={stopLocationUpdates}
+        >
+          <Text style={styles.btnText}>Stop</Text>
         </Pressable>
       </View>
 
@@ -186,7 +226,7 @@ const styles = StyleSheet.create({
       },
     subView:{
         backgroundColor:'#0a3d62',
-        marginTop:'2%',
+        marginTop:'1%',
         width:'95%',
         height:'60%',
         borderRadius:10
@@ -200,8 +240,16 @@ const styles = StyleSheet.create({
       borderRadius:6
     },
     btnSecOne:{
-      marginTop:'10%',
+      marginTop:'5%',
       backgroundColor: '#16a085',
+      width:'80%',
+      height:'8%',
+      margin: '2%',
+      borderRadius:6
+    },
+    btnSecTwo:{
+      marginTop:'2%',
+      backgroundColor: '#ff3838',
       width:'80%',
       height:'8%',
       margin: '2%',
@@ -214,10 +262,17 @@ const styles = StyleSheet.create({
       height:'100%',
       backgroundColor: '#16a085',
     },
+    nextBtnTwo:{
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 8,
+      height:'100%',
+      backgroundColor: '#ff3838',
+    },
     subMapViewOne:{
       width:'95%',
-      height:'90%',
-      marginTop:'10%',
+      height:'95%',
+      marginTop:'5%',
       marginLeft:'2.5%',
       borderRadius:20
       
