@@ -1,6 +1,6 @@
 <h1>Location Reminder Front-End</h1>
 
-About ,
+About
 -----------------
 
 Our React Native front end seamlessly integrates with the Location Reminder backend to provide users with an intuitive and efficient experience. Leveraging Google Location Services, the app ensures accurate location tracking, enabling users to discover nearby places of interest effortlessly.
@@ -17,4 +17,4 @@ Screens,
 <img src='https://github.com/AshanManuka/Location-Reminder/assets/88023478/1357755f-11c5-4dd2-ab1d-4b5fce3825ac' width='20%' height='15%' alt="image"/>
 <img src='https://github.com/AshanManuka/Location-Reminder/assets/88023478/981f761e-17dd-4e9b-b65b-ff5a145270d4' width='20%' height='15%' alt="image"/>
 
-<h2><a href="https://github.com/AshanManuka">Visit to Back-End</a></h2>
+<h2><a href="https://github.com/AshanManuka/locationReminder-backEnd">Visit to Back-End</a></h2>
