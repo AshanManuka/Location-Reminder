@@ -8,7 +8,7 @@ const HomeScreen = ({ route, navigation }) => {
   const { dataArray } = route.params || {};
   const [errorMsg, setErrorMsg] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
-  const [responsePlace, setResponsePlace] = useState('');
+  const [responsePlace, setResponsePlace] = useState();
   const [mapRegion, setMapRegion] = useState({
     latitude: 6.9271,
     longitude: 79.8612,
@@ -89,10 +89,10 @@ const HomeScreen = ({ route, navigation }) => {
         .then((response) => response.json())
         .then((responseJson) => {
           console.log(responseJson);
-          if(responsePlace != responseJson.placename){
+          // if(responsePlace != responseJson.placename){
             showAlert(responseJson.placename, responseJson.category);
-            setResponsePlace(responseJson.placename);
-          }
+            //setResponsePlace(responseJson.placename);
+          //}
 
                   
         })
@@ -107,7 +107,6 @@ const HomeScreen = ({ route, navigation }) => {
   const showAlert = (placename,category) => {
     
     dataArray.forEach(element => {
-      console.log("Element is ",element);
       if(element.categoryName == category){
         Alert.alert(
           category,
